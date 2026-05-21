@@ -11,7 +11,6 @@ import (
 
 func main() {
 
-	// connect database
 	database, err := db.InitDB()
 
 	if err != nil {
@@ -19,12 +18,14 @@ func main() {
 		return
 	}
 
-	// repository
+	// auth
 	authRepo := repository.NewAuthRepository(database)
-
-	// handler
 	authHandler := handler.NewAuthHandler(authRepo)
 
-	// run auth menu
-	cli.AuthMenu(authHandler)
+	// game
+	gameRepo := repository.NewGameRepository(database)
+	gameHandler := handler.NewGameHandler(gameRepo)
+
+	// run app
+	cli.AuthMenu(authHandler, gameHandler)
 }

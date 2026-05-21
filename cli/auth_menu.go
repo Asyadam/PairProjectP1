@@ -6,7 +6,10 @@ import (
 	"github.com/Asyadam/PairProjectP1/handler"
 )
 
-func AuthMenu(authHandler *handler.AuthHandler) {
+func AuthMenu(
+	authHandler *handler.AuthHandler,
+	gameHandler *handler.GameHandler,
+) {
 
 	var choice int
 
@@ -26,7 +29,12 @@ func AuthMenu(authHandler *handler.AuthHandler) {
 			authHandler.Register()
 
 		case 2:
-			authHandler.Login()
+
+			success := authHandler.Login()
+
+			if success {
+				MainMenu(gameHandler)
+			}
 
 		case 3:
 			fmt.Println("Good Bye!")

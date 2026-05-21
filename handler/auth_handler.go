@@ -42,7 +42,7 @@ func (h *AuthHandler) Register() {
 	fmt.Println("Register Success!")
 }
 
-func (h *AuthHandler) Login() {
+func (h *AuthHandler) Login() bool {
 
 	var email string
 	var password string
@@ -57,14 +57,16 @@ func (h *AuthHandler) Login() {
 
 	if err != nil {
 		fmt.Println("Email not found")
-		return
+		return false
 	}
 
 	if user.Password != password {
 		fmt.Println("Wrong Password")
-		return
+		return false
 	}
 
 	fmt.Println("Login Success!")
 	fmt.Println("Welcome,", user.Email)
+
+	return true
 }
