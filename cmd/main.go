@@ -37,6 +37,17 @@ func main() {
 	reportRepo := repository.NewReportRepository(database)
 	reportHandler := handler.NewReportHandler(reportRepo)
 
+	// profile
+	profileRepo := repository.NewProfileRepository(database)
+	profileHandler := handler.NewProfileHandler(profileRepo)
+
 	// run app
-	cli.AuthMenu(authHandler, gameHandler, categoryHandler, orderHandler, reportHandler)
+	cli.AuthMenu(
+		authHandler,
+		gameHandler,
+		categoryHandler,
+		orderHandler,
+		reportHandler,
+		profileHandler,
+	)
 }

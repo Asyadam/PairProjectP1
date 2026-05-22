@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"bufio"
 	"fmt"
+	"strings"
 
 	"github.com/Asyadam/PairProjectP1/entity"
 	"github.com/Asyadam/PairProjectP1/repository"
@@ -15,24 +17,33 @@ func NewAuthHandler(authRepo *repository.AuthRepository) *AuthHandler {
 	return &AuthHandler{AuthRepo: authRepo}
 }
 
-func (h *AuthHandler) Register() {
-
-	var email string
-	var password string
+func (h *AuthHandler) Register(reader *bufio.Reader) {
+	var user entity.User
+	var profile entity.Profile
 
 	fmt.Print("Input Email: ")
-	fmt.Scan(&email)
+	email, _ := reader.ReadString('\n')
+	user.Email = strings.TrimSpace(email)
 
 	fmt.Print("Input Password: ")
-	fmt.Scan(&password)
+	password, _ := reader.ReadString('\n')
+	user.Password = strings.TrimSpace(password)
 
-	user := entity.User{
-		Email:    email,
-		Password: password,
-		Role:     "customer",
-	}
+	fmt.Print("Input Full Name: ")
+	fullName, _ := reader.ReadString('\n')
+	profile.FullName = strings.TrimSpace(fullName)
 
-	err := h.AuthRepo.CreateUser(user)
+	fmt.Print("Input Phone: ")
+	phone, _ := reader.ReadString('\n')
+	profile.Phone = strings.TrimSpace(phone)
+
+	fmt.Print("Input Address: ")
+	address, _ := reader.ReadString('\n')
+	profile.Address = strings.TrimSpace(address)
+
+	user.Role = "customer"
+
+	err := h.AuthRepo.CreateUserWithProfile(user, profile)
 
 	if err != nil {
 		fmt.Println("Register Failed:", err)
@@ -42,16 +53,16 @@ func (h *AuthHandler) Register() {
 	fmt.Println("Register Success!")
 }
 
-func (h *AuthHandler) Login() (entity.User, bool) {
-	var email string
-	var password string
+func (h *AuthHandler) Login(reader *bufio.Reader) (entity.User, bool) {
 	var emptyUser entity.User
 
 	fmt.Print("Input Email: ")
-	fmt.Scan(&email)
+	email, _ := reader.ReadString('\n')
+	email = strings.TrimSpace(email)
 
 	fmt.Print("Input Password: ")
-	fmt.Scan(&password)
+	password, _ := reader.ReadString('\n')
+	password = strings.TrimSpace(password)
 
 	user, err := h.AuthRepo.FindUserByEmail(email)
 
