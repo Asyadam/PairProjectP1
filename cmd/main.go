@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	database, err := db.InitDB()
 
 	if err != nil {
@@ -26,6 +25,10 @@ func main() {
 	gameRepo := repository.NewGameRepository(database)
 	gameHandler := handler.NewGameHandler(gameRepo)
 
+	// category
+	categoryRepo := repository.NewCategoryRepository(database)
+	categoryHandler := handler.NewCategoryHandler(categoryRepo)
+
 	// run app
-	cli.AuthMenu(authHandler, gameHandler)
+	cli.AuthMenu(authHandler, gameHandler, categoryHandler)
 }

@@ -9,12 +9,11 @@ import (
 func AuthMenu(
 	authHandler *handler.AuthHandler,
 	gameHandler *handler.GameHandler,
+	categoryHandler *handler.CategoryHandler,
 ) {
-
 	var choice int
 
 	for {
-
 		fmt.Println("==== AUTH MENU ====")
 		fmt.Println("1. Register")
 		fmt.Println("2. Login")
@@ -24,16 +23,14 @@ func AuthMenu(
 		fmt.Scan(&choice)
 
 		switch choice {
-
 		case 1:
 			authHandler.Register()
 
 		case 2:
-
 			success := authHandler.Login()
 
 			if success {
-				MainMenu(gameHandler)
+				MainMenu(gameHandler, categoryHandler)
 			}
 
 		case 3:
