@@ -10,6 +10,7 @@ func MainMenu(
 	gameHandler *handler.GameHandler,
 	categoryHandler *handler.CategoryHandler,
 	orderHandler *handler.OrderHandler,
+	reportHandler *handler.ReportHandler,
 	userID int,
 ) {
 	var choice int
@@ -19,7 +20,8 @@ func MainMenu(
 		fmt.Println("1. Game Menu")
 		fmt.Println("2. Category Menu")
 		fmt.Println("3. Order Menu")
-		fmt.Println("4. Logout")
+		fmt.Println("4. Report Menu")
+		fmt.Println("5. Logout")
 		fmt.Print("Choose Menu: ")
 
 		fmt.Scan(&choice)
@@ -35,6 +37,9 @@ func MainMenu(
 			OrderMenu(orderHandler, userID)
 
 		case 4:
+			ReportMenu(reportHandler)
+
+		case 5:
 			fmt.Println("Logout Success!")
 			return
 
