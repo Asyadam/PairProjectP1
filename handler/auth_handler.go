@@ -42,10 +42,10 @@ func (h *AuthHandler) Register() {
 	fmt.Println("Register Success!")
 }
 
-func (h *AuthHandler) Login() bool {
-
+func (h *AuthHandler) Login() (entity.User, bool) {
 	var email string
 	var password string
+	var emptyUser entity.User
 
 	fmt.Print("Input Email: ")
 	fmt.Scan(&email)
@@ -57,16 +57,16 @@ func (h *AuthHandler) Login() bool {
 
 	if err != nil {
 		fmt.Println("Email not found")
-		return false
+		return emptyUser, false
 	}
 
 	if user.Password != password {
 		fmt.Println("Wrong Password")
-		return false
+		return emptyUser, false
 	}
 
 	fmt.Println("Login Success!")
 	fmt.Println("Welcome,", user.Email)
 
-	return true
+	return user, true
 }

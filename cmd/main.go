@@ -29,6 +29,10 @@ func main() {
 	categoryRepo := repository.NewCategoryRepository(database)
 	categoryHandler := handler.NewCategoryHandler(categoryRepo)
 
+	// order
+	orderRepo := repository.NewOrderRepository(database)
+	orderHandler := handler.NewOrderHandler(orderRepo)
+
 	// run app
-	cli.AuthMenu(authHandler, gameHandler, categoryHandler)
+	cli.AuthMenu(authHandler, gameHandler, categoryHandler, orderHandler)
 }
