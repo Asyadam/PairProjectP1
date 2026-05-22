@@ -1,14 +1,18 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/Asyadam/PairProjectP1/handler"
 )
 
-func ReportMenu(reportHandler *handler.ReportHandler) {
-	var choice int
-
+func ReportMenu(
+	reportHandler *handler.ReportHandler,
+	reader *bufio.Reader,
+) {
 	for {
 		fmt.Println("==== REPORT MENU ====")
 		fmt.Println("1. User Report")
@@ -17,7 +21,16 @@ func ReportMenu(reportHandler *handler.ReportHandler) {
 		fmt.Println("4. Back")
 		fmt.Print("Choose Menu: ")
 
-		fmt.Scan(&choice)
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+
+		choice, err := strconv.Atoi(input)
+
+		if err != nil {
+			fmt.Println("Invalid Menu")
+			fmt.Println()
+			continue
+		}
 
 		switch choice {
 		case 1:

@@ -44,13 +44,13 @@ func MainMenu(
 			GameMenu(gameHandler)
 
 		case 2:
-			CategoryMenu(categoryHandler)
+			CategoryMenu(categoryHandler, reader)
 
 		case 3:
-			OrderMenu(orderHandler, userID)
+			OrderMenu(orderHandler, reader, userID)
 
 		case 4:
-			ReportMenu(reportHandler)
+			ReportMenu(reportHandler, reader)
 
 		case 5:
 			ProfileMenu(profileHandler, reader, userID)

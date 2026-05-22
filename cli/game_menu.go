@@ -7,11 +7,9 @@ import (
 )
 
 func GameMenu(gameHandler *handler.GameHandler) {
-
 	var choice int
 
 	for {
-
 		fmt.Println("==== GAME MENU ====")
 		fmt.Println("1. Add Game")
 		fmt.Println("2. View Games")
@@ -21,9 +19,9 @@ func GameMenu(gameHandler *handler.GameHandler) {
 		fmt.Print("Choose Menu: ")
 
 		fmt.Scan(&choice)
+		fmt.Scanln()
 
 		switch choice {
-
 		case 1:
 			gameHandler.CreateGame()
 

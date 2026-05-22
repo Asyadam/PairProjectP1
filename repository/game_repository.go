@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/Asyadam/PairProjectP1/entity"
 )
@@ -15,15 +14,17 @@ func NewGameRepository(db *sql.DB) *GameRepository {
 	return &GameRepository{DB: db}
 }
 
-func (r *GameRepository) CreateGame(game entity.Game) error {
+func (r *GameRepository) CreateGame(game entity.Game, categoryIDs []int) error {
+	tx, err := r.DB.Begin()
 
-	query := `
+	if err != nil {
+		return err
+	}
+
+	result, err := tx.Exec(`
 		INSERT INTO games(title, price, stock, description, release_date)
 		VALUES (?, ?, ?, ?, ?)
-	`
-
-	_, err := r.DB.Exec(
-		query,
+	`,
 		game.Title,
 		game.Price,
 		game.Stock,
@@ -31,16 +32,61 @@ func (r *GameRepository) CreateGame(game entity.Game) error {
 		game.ReleaseDate,
 	)
 
-	return err
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	gameID, err := result.LastInsertId()
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	for _, categoryID := range categoryIDs {
+		_, err = tx.Exec(`
+			INSERT INTO game_categories(game_id, category_id)
+			VALUES (?, ?)
+		`, gameID, categoryID)
+
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *GameRepository) GetAllGames() ([]entity.Game, error) {
-
 	var games []entity.Game
 
 	query := `
-		SELECT id, title, price, stock, description, release_date
-		FROM games
+		SELECT 
+			g.id,
+			g.title,
+			g.price,
+			g.stock,
+			COALESCE(g.description, ''),
+			COALESCE(DATE_FORMAT(g.release_date, '%Y-%m-%d'), ''),
+			COALESCE(GROUP_CONCAT(c.category_name SEPARATOR ', '), '-')
+		FROM games g
+		LEFT JOIN game_categories gc ON g.id = gc.game_id
+		LEFT JOIN categories c ON gc.category_id = c.id
+		GROUP BY 
+			g.id,
+			g.title,
+			g.price,
+			g.stock,
+			g.description,
+			g.release_date
 	`
 
 	rows, err := r.DB.Query(query)
@@ -52,9 +98,7 @@ func (r *GameRepository) GetAllGames() ([]entity.Game, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-
 		var game entity.Game
-		var releaseDate []byte
 
 		err := rows.Scan(
 			&game.ID,
@@ -62,15 +106,13 @@ func (r *GameRepository) GetAllGames() ([]entity.Game, error) {
 			&game.Price,
 			&game.Stock,
 			&game.Description,
-			&releaseDate,
+			&game.ReleaseDate,
+			&game.Categories,
 		)
 
 		if err != nil {
-			fmt.Println(err)
-			continue
+			return games, err
 		}
-
-		game.ReleaseDate = string(releaseDate)
 
 		games = append(games, game)
 	}
@@ -79,7 +121,6 @@ func (r *GameRepository) GetAllGames() ([]entity.Game, error) {
 }
 
 func (r *GameRepository) UpdateGame(game entity.Game) error {
-
 	query := `
 		UPDATE games
 		SET title = ?, price = ?, stock = ?, description = ?, release_date = ?
@@ -100,7 +141,6 @@ func (r *GameRepository) UpdateGame(game entity.Game) error {
 }
 
 func (r *GameRepository) DeleteGame(id int) error {
-
 	query := `
 		DELETE FROM games
 		WHERE id = ?

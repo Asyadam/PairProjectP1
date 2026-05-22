@@ -7,4 +7,5 @@ type Game struct {
 	Stock       int
 	Description string
 	ReleaseDate string
+	Categories  string
 }
