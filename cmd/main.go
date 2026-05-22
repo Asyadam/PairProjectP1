@@ -33,6 +33,10 @@ func main() {
 	orderRepo := repository.NewOrderRepository(database)
 	orderHandler := handler.NewOrderHandler(orderRepo)
 
+	// report
+	reportRepo := repository.NewReportRepository(database)
+	reportHandler := handler.NewReportHandler(reportRepo)
+
 	// run app
-	cli.AuthMenu(authHandler, gameHandler, categoryHandler, orderHandler)
+	cli.AuthMenu(authHandler, gameHandler, categoryHandler, orderHandler, reportHandler)
 }
