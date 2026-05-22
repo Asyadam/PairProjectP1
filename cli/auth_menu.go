@@ -10,6 +10,7 @@ func AuthMenu(
 	authHandler *handler.AuthHandler,
 	gameHandler *handler.GameHandler,
 	categoryHandler *handler.CategoryHandler,
+	orderHandler *handler.OrderHandler,
 ) {
 	var choice int
 
@@ -27,10 +28,10 @@ func AuthMenu(
 			authHandler.Register()
 
 		case 2:
-			success := authHandler.Login()
+			user, success := authHandler.Login()
 
 			if success {
-				MainMenu(gameHandler, categoryHandler)
+				MainMenu(gameHandler, categoryHandler, orderHandler, user.ID)
 			}
 
 		case 3:
