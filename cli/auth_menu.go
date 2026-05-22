@@ -1,7 +1,11 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 
 	"github.com/Asyadam/PairProjectP1/handler"
 )
@@ -12,8 +16,9 @@ func AuthMenu(
 	categoryHandler *handler.CategoryHandler,
 	orderHandler *handler.OrderHandler,
 	reportHandler *handler.ReportHandler,
+	profileHandler *handler.ProfileHandler,
 ) {
-	var choice int
+	reader := bufio.NewReader(os.Stdin)
 
 	for {
 		fmt.Println("==== AUTH MENU ====")
@@ -22,14 +27,23 @@ func AuthMenu(
 		fmt.Println("3. Exit")
 		fmt.Print("Choose Menu: ")
 
-		fmt.Scan(&choice)
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+
+		choice, err := strconv.Atoi(input)
+
+		if err != nil {
+			fmt.Println("Invalid Menu")
+			fmt.Println()
+			continue
+		}
 
 		switch choice {
 		case 1:
-			authHandler.Register()
+			authHandler.Register(reader)
 
 		case 2:
-			user, success := authHandler.Login()
+			user, success := authHandler.Login(reader)
 
 			if success {
 				MainMenu(
@@ -37,6 +51,8 @@ func AuthMenu(
 					categoryHandler,
 					orderHandler,
 					reportHandler,
+					profileHandler,
+					reader,
 					user.ID,
 				)
 			}

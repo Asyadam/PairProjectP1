@@ -14,25 +14,50 @@ func NewAuthRepository(db *sql.DB) *AuthRepository {
 	return &AuthRepository{DB: db}
 }
 
-func (r *AuthRepository) CreateUser(user entity.User) error {
+func (r *AuthRepository) CreateUserWithProfile(user entity.User, profile entity.Profile) error {
+	tx, err := r.DB.Begin()
 
-	query := `
+	if err != nil {
+		return err
+	}
+
+	result, err := tx.Exec(`
 		INSERT INTO users(email, password, role)
 		VALUES (?, ?, ?)
-	`
+	`, user.Email, user.Password, user.Role)
 
-	_, err := r.DB.Exec(
-		query,
-		user.Email,
-		user.Password,
-		user.Role,
-	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 
-	return err
+	userID, err := result.LastInsertId()
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec(`
+		INSERT INTO profiles(user_id, full_name, phone, address)
+		VALUES (?, ?, ?, ?)
+	`, userID, profile.FullName, profile.Phone, profile.Address)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *AuthRepository) FindUserByEmail(email string) (entity.User, error) {
-
 	var user entity.User
 
 	query := `
